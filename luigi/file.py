@@ -56,7 +56,11 @@ class LocalFileSystem(FileSystem):
         return os.path.exists(path)
 
     def mkdir(self, path):
-        os.makedirs(path)
+        try:
+            os.makedirs(path)
+        except OSError as err:
+            if not err.errno == 17:
+                raise
 
     def isdir(self, path):
         return os.path.isdir(path)
