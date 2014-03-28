@@ -102,11 +102,11 @@ class CopyToIndexTest(unittest.TestCase):
 
     def setUp(self):
         """ Cleanup before starting. """
-        self._cleanup()
+        _cleanup()
 
     def tearDown(self):
         """ Remove residues. """
-        self._cleanup()
+        _cleanup()
 
     def test_copy_to_index(self):
         """ Test a single document upload. """
