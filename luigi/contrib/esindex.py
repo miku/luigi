@@ -111,8 +111,9 @@ class CopyToIndex(luigi.Task):
     Template task for inserting a data set into Elasticsearch.
 
     Usage:
-    Subclass and override the required `host`, `port`, `index`, `doc_type`
-    attributes. Optional attributes: `mapping` (None), `settings` (None),
+    Subclass and override the required `index`, `doc_type` attributes.
+
+    Optional attributes: `host` (localhost), `port` (9200), `mapping` (None),
     `chunk_size` (2000) and `raise_on_error` (True).
 
     To customize how to access data from an input task, override the `docs`
