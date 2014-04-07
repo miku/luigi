@@ -170,11 +170,11 @@ class CopyToIndex(luigi.Task):
         contain `_index` or `_type`, add those attributes here, if necessary.
         """
         first = iter(self.docs()).next()
-        needs_parsing = None
+        needs_parsing = False
         if isinstance(first, basestring):
             needs_parsing = True
         elif isinstance(first, dict):
-            needs_parsing = False
+            pass
         else:
             raise RuntimeError('Document must be either JSON strings or dict.')
         for doc in self.docs():
