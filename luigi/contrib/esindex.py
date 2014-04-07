@@ -94,7 +94,9 @@ class ElasticsearchTarget(luigi.Target):
                        id=self.marker_index_document_id())
             return True
         except elasticsearch.NotFoundError:
-            return False
+            logger.debug('Marker document not found.')
+        except elasticsearch.ElasticsearchException as err:
+            logger.warn(err)
         return False
 
     def create_marker_index(self):
