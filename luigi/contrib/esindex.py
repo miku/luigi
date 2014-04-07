@@ -21,7 +21,7 @@ Usage:
 
     if __name__ == '__main__':
         task = ExampleIndex()
-        luigi.build([task])
+        luigi.build([task], local_scheduler=True)
 """
 
 import abc
