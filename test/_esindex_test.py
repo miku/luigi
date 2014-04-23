@@ -153,5 +153,20 @@ class CopyToIndexTest(unittest.TestCase):
                                         doc_type=task1.doc_type, id=123))
 
         self.assertEquals({u'date': u'today', u'name': u'another'},
-                          es.get_source(index=task1.index,
+                          es.get_source(index=task2.index,
                                         doc_type=task2.doc_type, id=234))
+
+    def test_copy_to_index_purge_existing(self):
+        task1 = IndexingTask()
+        task2 = IndexingTask2()
+        task3 = IndexingTask3()
+        es = elasticsearch.Elasticsearch([{'host': host, 'port': port}])
+        luigi.build([task1, task2], local_scheduler=True)
+        luigi.build([task3], local_scheduler=True)
+        self.assertTrue(es.indices.exists(task3.index))
+        self.assertTrue(task3.complete())
+        self.assertEquals(1, es.count(index=task3.index).get('count'))
+
+        self.assertEquals({u'date': u'today', u'name': u'yet another'},
+                          es.get_source(index=task3.index,
+                                        doc_type=task3.doc_type, id=234))
