@@ -57,7 +57,6 @@ class ElasticsearchTarget(luigi.Target):
             index (str): Index name
             doc_type (str): Doctype name
             update_id (str): An identifier for this data set
-
         """
         self.host = host
         self.port = port
@@ -71,7 +70,7 @@ class ElasticsearchTarget(luigi.Target):
         return hashlib.sha1(params).hexdigest()
 
     def touch(self):
-        """Mark this update as complete. The document id would be sufficent,
+        """ Mark this update as complete. The document id would be sufficent,
         but we index the parameters (update_id, target_index, target_doc_type)
         as well for documentation. """
         self.create_marker_index()
@@ -112,6 +111,10 @@ class CopyToIndex(luigi.Task):
 
     Usage:
     Subclass and override the required `index`, `doc_type` attributes.
+    Implement a custom `docs` method, that returns an iterable over
+    the documents. A document can be a JSON string, e.g. from
+    a newline-delimited JSON (ndj) file (default implementation) or some
+    dictionary.
 
     Optional attributes: `host` (localhost), `port` (9200), `mapping` (None),
     `chunk_size` (2000) and `raise_on_error` (True).
@@ -138,17 +141,17 @@ class CopyToIndex(luigi.Task):
 
     @abc.abstractproperty
     def doc_type(self):
-        """ The target doc_type """
+        """ The target doc_type. """
         return None
 
     @property
     def mapping(self):
-        """ Dictionary with custom mapping or None """
+        """ Dictionary with custom mapping or `None`. """
         return None
 
     @property
     def chunk_size(self):
-        """ Single API call for this number of docs """
+        """ Single API call for this number of docs. """
         return 2000
 
     @property
@@ -197,11 +200,11 @@ class CopyToIndex(luigi.Task):
             es.indices.create(index=self.index)
 
     def update_id(self):
-        """This update id will be a unique identifier for this indexing task."""
+        """ This id will be a unique identifier for this indexing task."""
         return self.task_id
 
     def output(self):
-        """Returns a ElasticsearchTarget representing the inserted dataset.
+        """ Returns a ElasticsearchTarget representing the inserted dataset.
 
         Normally you don't override this.
         """
