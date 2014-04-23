@@ -88,6 +88,15 @@ class IndexingTask2(CopyToTestIndex):
                  'name': 'another', 'date': 'today'}]
 
 
+class IndexingTask3(CopyToTestIndex):
+    """ This task will request an empty index to start with. """
+    purge_existing_index = True
+    def docs(self):
+        """ Return a list with a single doc. """
+        return [{'_id': 234, '_index': self.index, '_type': self.doc_type,
+                 'name': 'yet another', 'date': 'today'}]
+
+
 def _cleanup():
     """ Delete both the test marker index and the content index. """
     es = elasticsearch.Elasticsearch([{'host': host, 'port': port}])

@@ -159,6 +159,11 @@ class CopyToIndex(luigi.Task):
         """ Whether to fail fast. """
         return True
 
+    @property
+    def purge_existing_index(self):
+        """ Whether to delete the `index` completely before any reindexing. """
+        return False
+
     def docs(self):
         """ Return the documents to be indexed. Beside the user defined
         fields, the document can contain an `_index`, `_type` and `_id`. """
@@ -199,6 +204,13 @@ class CopyToIndex(luigi.Task):
         if not es.indices.exists(index=self.index):
             es.indices.create(index=self.index)
 
+    def delete_index(self):
+        """ Delete the index, if it exists. """
+        es = elasticsearch.Elasticsearch([{'host': self.host,
+                                           'port': self.port}])
+        if es.indices.exists(index=self.index):
+            es.indices.delete(index=self.index)
+
     def update_id(self):
         """ This id will be a unique identifier for this indexing task."""
         return self.task_id
@@ -217,12 +229,15 @@ class CopyToIndex(luigi.Task):
          )
 
     def run(self):
-        """ Create the index, if missing. Apply mappings, if given.
+        """ Purge existing index, if requested (`purge_existing_index`).
+        Create the index, if missing. Apply mappings, if given.
         Set refresh interval to -1 (disable) for performance reasons.
         Bulk index in batches of size `chunk_size` (2000).
         Set refresh interval to 1s. Refresh Elasticsearch.
         Create entry in marker index.
         """
+        if self.purge_existing_index:
+            self.delete_index()
         self.create_index()
         es = elasticsearch.Elasticsearch([{'host': self.host,
                                            'port': self.port}])
