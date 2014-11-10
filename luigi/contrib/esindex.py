@@ -334,6 +334,7 @@ class CopyToIndex(luigi.Task):
         return ElasticsearchTarget(
             host=self.host,
             port=self.port,
+            http_auth=self.http_auth,
             index=self.index,
             doc_type=self.doc_type,
             update_id=self.update_id(),
